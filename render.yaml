@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: agard
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      # Set these in the Render dashboard, never commit them:
+      # PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET

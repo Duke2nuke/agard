@@ -1,0 +1,8 @@
+Flask>=3.0
+requests>=2.31
+python-dotenv>=1.0
+gunicorn>=21.0
+# PayPal Agent Toolkit: follow the official PayPal Agent Toolkit docs for the
+# exact install for your Python version — do not guess a package name here.
+# The scaffold's paypal_client.py uses the PayPal REST Orders API directly,
+# which is the verified path used in the demo.
