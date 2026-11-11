@@ -1,5 +1,7 @@
 # Agard — the agent that guards every buy
 
+**Live demo: https://agard.onrender.com** — free Render tier, labelled MOCK mode (no PayPal credentials set, no real money). First load after inactivity may take ~50 seconds. Verified live 1 Nov 2026: `/health` returns `{"mode":"MOCK","status":"ok"}`.
+
 Full idea, workflow, judging map and guidelines checklist:
 [PROJECT_BLUEPRINT.md](PROJECT_BLUEPRINT.md)
 
@@ -19,7 +21,8 @@ a real PayPal **sandbox** checkout on user approval.
   No real money, no production PayPal data.
 - Registered on Devpost (PayPal AI Hackathon, 30 Oct 2026, join only).
 - Sandbox proof so far (31 Oct): OAuth ok, $49.99 test order CREATED; buyer approval/capture parked after the approve link crashed — do not retry that link.
-- Still needed: hosted demo, video.
+- Hosted demo LIVE 31 Oct 2026: https://agard.onrender.com (Render free tier, MOCK mode, no credentials set; re-verified 1 Nov 2026, `/health` ok).
+- Still needed: video, then Devpost submission 11 Nov evening IST (hard deadline 13 Nov 01:30 IST).
 
 ## Quick start — clean clone (mock mode, no credentials needed)
 ```bash
