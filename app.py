@@ -30,32 +30,98 @@ app = Flask(__name__)
 USUAL_USD = [42, 48, 55, 50, 60, 45, 52]
 TRANSACTIONS = []
 
-PAGE = """<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agard — the agent that guards every buy</title>
 <style>
-body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:900px;margin:0 auto;padding:24px;color:#111;background:#f7f7f8}
-h1{font-size:28px;margin-bottom:4px}.sub{color:#555;margin-top:0}
-.card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:16px;margin:12px 0}
-input,button{font-size:16px;padding:10px;border-radius:8px;border:1px solid #ccc}
-button{background:#111;color:#fff;cursor:pointer;border-color:#111} button:disabled{background:#999;border-color:#999;cursor:not-allowed}
-.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:13px;font-weight:600}
-.safe{background:#dcfce7}.warn{background:#fef9c3}.blocked{background:#fee2e2}
-.riskbar{height:10px;background:#eee;border-radius:6px;overflow:hidden}.riskfill{height:100%;background:#16a34a}
-.muted{color:#666;font-size:14px}.verdict{font-weight:600}
+*{box-sizing:border-box}
+:root{--pp-dark:#003087;--pp-blue:#0070e0;--pp-blue-hover:#005ea6;--ink:#2c2e2f;--muted:#687173;--bg:#f5f7fa;--line:#d9dee3;--card-line:#e3e6ea;--green:#007a3d;--green-bg:#e6f7ee;--amber:#8a5a00;--amber-bg:#fff4d6;--red:#b42318;--red-bg:#fdecea}
+html{-webkit-text-size-adjust:100%}
+body{font-family:"Helvetica Neue",Helvetica,Arial,system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--pp-blue)}
+.topbar{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--card-line)}
+.topbar-inner{max-width:720px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:9px;font-size:21px;font-weight:800;color:var(--pp-dark);letter-spacing:-.02em}
+.brand svg{flex:none}
+.pp-chip{margin-left:auto;font-size:12px;font-weight:700;color:var(--pp-dark);background:#e8f1fb;border:1px solid #cfe2f5;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.container{max-width:720px;margin:0 auto;padding:0 16px 40px}
+.hero{padding:26px 0 6px}
+.hero h1{font-size:29px;line-height:1.2;margin:0 0 8px;color:var(--pp-dark);letter-spacing:-.02em}
+.hero p{margin:0;color:#3c4043;font-size:16px;max-width:56ch}
+.card{background:#fff;border:1px solid var(--card-line);border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.card h2{font-size:18px;margin:0 0 4px;color:var(--pp-dark)}
+.card h3{font-size:17px;margin:0}
+.lede{font-size:15px;margin:0 0 4px}
+.lede b{color:var(--pp-dark)}
+.muted{color:var(--muted);font-size:14px}
+.fineprint{color:var(--muted);font-size:13px;line-height:1.55}
+.field{margin:12px 0}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.field input{width:100%;font-size:16px;padding:12px;border-radius:10px;border:1px solid #b7bfc6;background:#fff;color:var(--ink)}
+.field input:focus{outline:none;border-color:var(--pp-blue);box-shadow:0 0 0 3px rgba(0,112,224,.18)}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+button{font-family:inherit;font-size:15px;font-weight:600;padding:12px 20px;border-radius:999px;cursor:pointer;border:1px solid transparent}
+.btn-primary{background:var(--pp-blue);color:#fff;width:100%}
+.btn-primary:hover{background:var(--pp-blue-hover)}
+.btn-secondary{background:#fff;color:var(--pp-blue);border-color:var(--pp-blue)}
+.btn-secondary:hover{background:#eef6ff}
+.btn-outline-danger{background:#fff;color:var(--red);border-color:#e5a49e;width:100%}
+.btn-outline-danger:hover{background:var(--red-bg)}
+button:disabled{background:#9aa3ab;border-color:#9aa3ab;cursor:not-allowed}
+.btn-block{width:100%;margin-top:12px}
+.mode-line{font-size:13px;color:var(--muted);margin:10px 0 0}
+.badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.02em}
+.safe{background:var(--green-bg);color:var(--green)}
+.warn{background:var(--amber-bg);color:var(--amber)}
+.blocked{background:var(--red-bg);color:var(--red)}
+.riskbar{height:8px;background:#e9ecef;border-radius:999px;overflow:hidden;margin:12px 0 4px}
+.riskfill{height:100%;border-radius:999px}
+.verdict{font-weight:600;font-size:15px;margin:10px 0 6px}
+.product ul{margin:6px 0 0;padding-left:19px;color:#4a5054;font-size:14px;line-height:1.55}
+.product ul li{margin:3px 0}
+.prod-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.price{font-size:17px;font-weight:800;color:var(--pp-dark);white-space:nowrap}
+.blocked-card{border-color:#f3c2be;background:#fff9f8}
+.tx-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;padding:10px 0;border-bottom:1px solid #eef1f4;font-size:14px}
+.tx-row:last-child{border-bottom:none}
+.tx-amt{font-weight:700;color:var(--pp-dark);white-space:nowrap}
+pre{background:var(--bg);border:1px solid var(--card-line);border-radius:12px;padding:12px;font-size:12.5px;line-height:1.5;overflow-x:auto;white-space:pre-wrap;word-break:break-word;margin:12px 0 0}
+@media (min-width:640px){
+  .hero{padding:36px 0 10px}
+  .hero h1{font-size:34px}
+  .card{padding:24px}
+  .form-row{display:flex;gap:12px;align-items:flex-end}
+  .form-row .field{flex:1;margin:12px 0 0}
+  .btn-primary{width:auto}
+  .btn-outline-danger{width:auto}
+  .btn-block{width:100%}
+}
 </style></head><body>
-<h1>Agard</h1><p class="sub">The agent that guards every buy. Agent finds it, guard checks it, <b>you</b> approve it — then PayPal sandbox checkout.</p>
-<div class="card"><b>Try it in 30 seconds:</b> search <i>earbuds</i> with a $100 budget. The $299 new-merchant item is blocked. The $49.99 established-merchant item can be approved.
-<p class="muted" id="mode">Checking mode…</p>
-<label>What do you want? <input id="q" value="earbuds" size="20"></label>
-<label> Budget (USD) <input id="budget" type="number" value="100" style="width:90px"></label>
-<button onclick="doSearch()">Ask the agent</button>
-<button onclick="quick('p2')">Try the risky one</button>
-<button onclick="quick('p1')">Try the safe one</button>
+<header class="topbar"><div class="topbar-inner">
+<span class="brand"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l8 3v6c0 5.25-3.4 9.74-8 11-4.6-1.26-8-5.75-8-11V5l8-3z" fill="#0070e0"/><path d="M12 4.6l5.4 2.02v4.13c0 3.9-2.3 7.2-5.4 8.3-3.1-1.1-5.4-4.4-5.4-8.3V6.62L12 4.6z" fill="#003087"/><path d="M10.6 12.6l-1.9-1.9-1 1 2.9 2.9 5.7-5.7-1-1-4.7 4.7z" fill="#fff"/></svg>Agard</span>
+<span class="pp-chip">Built with PayPal Sandbox</span>
+</div></header>
+<main class="container">
+<div class="hero">
+<h1>The agent that guards every buy.</h1>
+<p>Agard finds it, the guard checks it, <b>you</b> approve it — then PayPal sandbox checkout. No money moves on search alone.</p>
+</div>
+<div class="card"><p class="lede"><b>Try it in 30 seconds:</b> search <i>earbuds</i> with a $100 budget. The $299 new-merchant item is blocked. The $49.99 established-merchant item can be approved.</p>
+<p class="mode-line" id="mode">Checking mode…</p>
+<div class="form-row">
+<div class="field"><label for="q">What do you want?</label><input id="q" value="earbuds" autocomplete="off"></div>
+<div class="field"><label for="budget">Budget (USD)</label><input id="budget" type="number" value="100" inputmode="decimal"></div>
+</div>
+<div class="btn-row">
+<button class="btn-primary" onclick="doSearch()">Ask the agent</button>
+<button class="btn-secondary" onclick="quick('p2')">Try the risky one</button>
+<button class="btn-secondary" onclick="quick('p1')">Try the safe one</button>
+</div>
 </div>
 <div id="results"></div>
 <div class="card"><h2>Transactions</h2><div id="tx" class="muted">None yet.</div>
-<button onclick="loadTx()">Refresh transactions</button></div>
-<p class="muted">Sandbox / synthetic data only. No real money, no production PayPal data. Mock products are labelled in the API; the guard is a statistical flag, not a production fraud system.</p>
+<div class="btn-row"><button class="btn-secondary" onclick="loadTx()">Refresh transactions</button></div></div>
+<p class="fineprint">Sandbox / synthetic data only. No real money, no production PayPal data. Mock products are labelled in the API; the guard is a statistical flag, not a production fraud system.</p>
+</main>
 <script>
 async function doSearch(){
   const q=document.getElementById('q').value, budget=document.getElementById('budget').value;
@@ -65,9 +131,9 @@ async function doSearch(){
   items.forEach(p=>{
     const cls=p.blocked?'blocked':(p.risk>=40?'warn':'safe');
     const label=p.blocked?'BLOCKED':(p.risk>=40?'CAUTION':'SAFE');
-    const btn=p.blocked?`<button onclick="overrideCheckout('${p.id}')">Human override (logged) — $${p.price_usd}</button>`:`<button onclick="approve('${p.id}')">Approve checkout — $${p.price_usd}</button>`;
-    el.innerHTML+=`<div class="card"><h3>${p.name} — $${p.price_usd}</h3><p class="muted">${p.merchant}</p>
-    <span class="badge ${cls}">${label} · risk ${p.risk}/100</span><div class="riskbar"><div class="riskfill" style="width:${p.risk}%;background:${p.blocked?'#dc2626':(p.risk>=40?'#d97706':'#16a34a')}"></div></div>
+    const btn=p.blocked?`<button class="btn-outline-danger btn-block" onclick="overrideCheckout('${p.id}')">Human override (logged) — $${p.price_usd}</button>`:`<button class="btn-primary btn-block" onclick="approve('${p.id}')">Approve checkout — $${p.price_usd}</button>`;
+    el.innerHTML+=`<div class="card product ${p.blocked?'blocked-card':''}"><div class="prod-head"><h3>${p.name}</h3><span class="price">$${p.price_usd}</span></div><p class="muted">${p.merchant}</p>
+    <span class="badge ${cls}">${label} · risk ${p.risk}/100</span><div class="riskbar"><div class="riskfill" style="width:${p.risk}%;background:${p.blocked?'#d92d20':(p.risk>=40?'#f59e0b':'#00a94f')}"></div></div>
     <p class="verdict">${p.verdict}</p><ul>${p.reasons.map(x=>`<li>${x}</li>`).join('')}</ul>${btn}<div id="out-${p.id}"></div></div>`;
   });
 }
@@ -93,7 +159,7 @@ async function quick(id){
 }
 async function loadTx(){
   const r=await fetch('/transactions'); const t=await r.json();
-  document.getElementById('tx').innerHTML=t.length?t.map(x=>`<div>${x.product} — $${x.amount} — ${x.status} ${x.order_id||''}</div>`).join(''):'None yet.';
+  document.getElementById('tx').innerHTML=t.length?t.map(x=>`<div class="tx-row"><span>${x.product}</span><span class="tx-amt">$${x.amount} · ${x.status}</span></div>`).join(''):'None yet.';
   const m=await fetch('/mode'); const mj=await m.json();
   document.getElementById('mode').textContent='Mode: '+mj.mode+(mj.mode==='MOCK'?' — no PayPal credentials set, so checkouts are labelled mock, not real sandbox orders.':' — real PayPal sandbox API.');
 }
